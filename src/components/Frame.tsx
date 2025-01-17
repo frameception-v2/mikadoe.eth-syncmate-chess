@@ -15,7 +15,7 @@ import { base, optimism } from "wagmi/chains";
 import { useSession } from "next-auth/react";
 import { createStore } from "mipd";
 import { Label } from "~/components/ui/label";
-import { PROJECT_TITLE } from "~/lib/constants";
+import { PROJECT_TITLE, GAME_TYPES, GAME_STATES, PLAYER_ROLES } from "~/lib/constants";
 
 function ExampleCard() {
   return (
@@ -42,6 +42,8 @@ export default function Frame(
   const [context, setContext] = useState<Context.FrameContext>();
 
   const [added, setAdded] = useState(false);
+  const [gameType, setGameType] = useState<keyof typeof GAME_TYPES | null>(null);
+  const [gameState, setGameState] = useState<keyof typeof GAME_STATES>(GAME_STATES.WAITING);
 
   const [addFrameResult, setAddFrameResult] = useState("");
 
@@ -137,7 +139,39 @@ export default function Frame(
     >
       <div className="w-[300px] mx-auto py-2 px-2">
         <h1 className="text-2xl font-bold text-center mb-4 text-neutral-900">{title}</h1>
-        <ExampleCard />
+        {gameType ? (
+          <div className="text-neutral-900">
+            <h2 className="text-xl font-bold mb-2">Game in Progress</h2>
+            <p>Type: {gameType}</p>
+            <p>Status: {gameState}</p>
+            <PurpleButton 
+              onClick={() => {
+                setGameType(null);
+                setGameState(GAME_STATES.WAITING);
+              }}
+            >
+              Exit Game
+            </PurpleButton>
+          </div>
+        ) : (
+          <>
+            <ExampleCard />
+            <div className="mt-4">
+              <h2 className="text-xl font-bold mb-2 text-neutral-900">Start a Game</h2>
+              <PurpleButton 
+                className="mb-2"
+                onClick={() => setGameType(GAME_TYPES.CHESS)}
+              >
+                Play Chess
+              </PurpleButton>
+              <PurpleButton 
+                onClick={() => setGameType(GAME_TYPES.TIC_TAC_TOE)}
+              >
+                Play Tic-Tac-Toe
+              </PurpleButton>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
